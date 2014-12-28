@@ -3,12 +3,12 @@ package main
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -22,8 +22,11 @@ type Conversion struct {
 var Conversions []Conversion
 
 func main() {
-
-	body, err := ioutil.ReadFile("config.json")
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+	body, err := ioutil.ReadFile(dir + "/config.json")
 	if err != nil {
 		log.Println(err)
 	}
@@ -68,7 +71,6 @@ func main() {
 					} else {
 						work := strings.Replace(s, "* ", "", 2)
 						entries := strings.SplitN(work, " ", 2)
-						fmt.Println(entries)
 						title := ""
 						if len(entries) == 1 {
 							title = entries[0]
@@ -85,6 +87,7 @@ func main() {
 			}
 			w.Flush()
 			os.Remove("temp.txt")
+			log.Println("Gopher update done")
 		}
 	}
 }
